@@ -1,0 +1,10 @@
+{
+    "drinkType": "Latte",
+    "size": "Small",
+    "milk": "Oat Milk",
+    "extras": [
+        "plain",
+        "Chocolate chips"
+    ],
+    "name": "Prince"
+}
