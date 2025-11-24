@@ -1,4 +1,7 @@
 import logging
+import json
+import os
+from datetime import datetime
 from dotenv import load_dotenv
 
 from livekit.agents import (
@@ -10,66 +13,124 @@ from livekit.agents import (
     cli,
     metrics,
     tokenize,
+    function_tool,
+    RunContext
 )
 
-# Windows-safe plugins only
+# No VAD or turn detection (Windows workaround)
 from livekit.plugins import murf, google, deepgram, noise_cancellation
 
-# Load environment
 logger = logging.getLogger("agent")
 load_dotenv(".env.local")
 
-# -------------------------
-# IMPORT TOOLS (Day-2 logic)
-# -------------------------
-from coffee_tools import update_order, is_order_complete, save_order
+WELLNESS_FILE = "wellness_log.json"
 
 
-# =========================================================
-#   ASSISTANT CLASS — BARISTA + GREETING LOGIC
-# =========================================================
-class Assistant(Agent):
-    def __init__(self) -> None:
+# -------------------------------
+# JSON UTILITIES
+# -------------------------------
+def load_history():
+    if not os.path.exists(WELLNESS_FILE):
+        return []
+    try:
+        with open(WELLNESS_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return []
+
+
+def save_history_entry(entry):
+    history = load_history()
+    history.append(entry)
+    with open(WELLNESS_FILE, "w") as f:
+        json.dump(history, f, indent=2)
+
+
+# -------------------------------
+# TOOLS
+# -------------------------------
+@function_tool
+async def save_checkin(
+    context: RunContext,
+    mood: str,
+    energy: str,
+    stress: str,
+    goals: list[str],
+    summary: str
+):
+    """
+    Saves a wellness check-in to the JSON log.
+    """
+    entry = {
+        "timestamp": datetime.now().isoformat(),
+        "mood": mood,
+        "energy": energy,
+        "stress": stress,
+        "goals": goals,
+        "summary": summary,
+    }
+    save_history_entry(entry)
+    return "saved"
+
+
+@function_tool
+async def read_last_checkin(context: RunContext):
+    """
+    Returns the last entry in wellness_log.json.
+    """
+    history = load_history()
+    if len(history) == 0:
+        return "none"
+    return history[-1]
+
+
+# -------------------------------
+# AGENT
+# -------------------------------
+class WellnessAgent(Agent):
+    def __init__(self):
+        last = load_history()[-1] if len(load_history()) else None
+
+        previous_ref = ""
+        if last:
+            previous_ref = (
+                f"Yesterday you reported mood {last['mood']}, "
+                f"energy {last['energy']}, stress {last['stress']}. "
+                f"Use this as conversational reference, but don't rely on it too strongly."
+            )
+
         super().__init__(
-            instructions="""
-You are a friendly barista at **Cafe Coffee Day** (CCD).
-
-Start EVERY conversation with:
-"Hi! Welcome to Cafe Coffee Day! What can I get started for you today?"
+            instructions=f"""
+You are a calm, grounded Health & Wellness voice companion.
 
 Your job:
-1. Take the user's coffee order.
-2. Ask questions until ALL fields are filled:
-   - drinkType
-   - size
-   - milk
-   - extras
-   - name
+1. Ask about today's mood, energy, stress.
+2. Ask for 1–3 simple goals.
+3. Give small, realistic, supportive advice.
+4. Create a brief recap.
+5. Call save_checkin tool with:
+   - mood
+   - energy
+   - stress
+   - goals
+   - summary
 
-3. Use the tools EXACTLY as needed:
-   - Call update_order when user provides any detail.
-   - Call is_order_complete to check if the order is finished.
-   - When complete, call save_order, then read back the full order, and say:
-     "Your order is ready. Thank you!"
+Avoid medical, diagnostic or clinical claims.
 
-Rules:
-- Keep responses short and natural.
-- Never guess — always ask for missing details.
-- Do NOT fill fields unless user says them.
-- Confirm unclear details.
-""",
-            tools=[update_order, is_order_complete, save_order]
+Reference the previous day like this:
+"{previous_ref}"
+            """,
+            tools=[save_checkin, read_last_checkin],
         )
 
 
-# =========================================================
-#   ENTRYPOINT — PIPELINE SETUP (Windows Friendly)
-# =========================================================
+# -------------------------------
+# ENTRYPOINT
+# -------------------------------
 async def entrypoint(ctx: JobContext):
 
     ctx.log_context_fields = {"room": ctx.room.name}
 
-    # Voice agent session
     session = AgentSession(
         stt=deepgram.STT(model="nova-3"),
         llm=google.LLM(model="gemini-2.5-flash"),
@@ -78,42 +139,27 @@ async def entrypoint(ctx: JobContext):
             style="Conversation",
             tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
         ),
-
-        # Disable broken-on-Windows features
         turn_detection=None,
         vad=None,
-
         preemptive_generation=True,
     )
 
-    # Metrics
-    usage_collector = metrics.UsageCollector()
+    usage = metrics.UsageCollector()
 
     @session.on("metrics_collected")
-    def _on_metrics(ev):
-        metrics.log_metrics(ev.metrics)
-        usage_collector.collect(ev.metrics)
+    def _m(ev):
+        usage.collect(ev.metrics)
 
-    async def log_usage():
-        logger.info(f"Usage summary: {usage_collector.get_summary()}")
-
-    ctx.add_shutdown_callback(log_usage)
-
-    # Start assistant
     await session.start(
-        agent=Assistant(),
+        agent=WellnessAgent(),
         room=ctx.room,
         room_input_options=RoomInputOptions(
-            noise_cancellation=noise_cancellation.BVC(),
+            noise_cancellation=noise_cancellation.BVC()
         ),
     )
 
-    # Connect to the room
     await ctx.connect()
 
 
-# =========================================================
-#   MAIN ENTRY
-# =========================================================
 if __name__ == "__main__":
     cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))

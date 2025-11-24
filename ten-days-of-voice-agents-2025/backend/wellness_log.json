@@ -1,0 +1,54 @@
+[
+  {
+    "timestamp": "2025-11-24T19:46:48.273979",
+    "mood": "2",
+    "energy": "low",
+    "stress": "very distressed",
+    "goals": [
+      "study today",
+      "go for walk",
+      "drink water"
+    ],
+    "summary": "User reported mood as 2, low energy, and very distressed. Goals are to study, go for a walk, and drink water."
+  },
+  {
+    "timestamp": "2025-11-24T20:40:36.283191",
+    "mood": "3",
+    "energy": "medium",
+    "stress": "very calm",
+    "goals": [
+      "Completing my assignment today"
+    ],
+    "summary": "User reported mood as 3, medium energy, and very calm. Goal is to complete an assignment today, with a plan to break it down, take breaks, or use a timer."
+  },
+  {
+    "timestamp": "2025-11-24T20:44:00.559176",
+    "mood": "4",
+    "energy": "high",
+    "stress": "calm",
+    "goals": [
+      "Completing my assignment today"
+    ],
+    "summary": "User reported mood as 4, high energy, and calm. Goal is to complete an assignment today, with a plan to break it down, take breaks, or use a timer."
+  },
+  {
+    "timestamp": "2025-11-24T20:48:15.696791",
+    "mood": "2",
+    "energy": "low",
+    "stress": "very high",
+    "goals": [
+      "Completing my assignment today"
+    ],
+    "summary": "User reported mood as 2/5, low energy, and very high stress. The main goal is to complete an assignment today. Advice given was to break it down, take breaks, and focus on one small step at a time."
+  },
+  {
+    "timestamp": "2025-11-24T20:48:54.424729",
+    "mood": "2",
+    "energy": "low",
+    "stress": "very high",
+    "goals": [
+      "Completing my assignment today"
+    ],
+    "summary": "User reported mood as 2, low energy, and very high stress. Goal is to complete an assignment today, with advice to break it down into smaller chunks and take short breaks."
+  }
+]
