@@ -1,0 +1,89 @@
+[
+  {
+    "lead_summary": {
+      "created_at": "2025-11-26T13:59:04.724228",
+      "name": "Ravi Kumar",
+      "email": "Ravi.Kumar@Example.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T14:00:02.149109"
+    },
+    "generated_at": "2025-11-26T14:00:02.149109"
+  },
+  {
+    "lead_summary": {
+      "created_at": "2025-11-26T13:59:04.724228",
+      "name": "Ravi Kumar",
+      "email": "Ravi.Kumar@Example.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T14:00:04.095128"
+    },
+    "generated_at": "2025-11-26T14:00:04.096127"
+  },
+  {
+    "lead": {
+      "created_at": "2025-11-26T13:59:04.724228",
+      "name": "Ravi Kumar",
+      "email": "Ravi.Kumar@Example.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T14:00:04.095128"
+    },
+    "pain_points": [],
+    "budget_mentioned": false,
+    "decision_maker": false,
+    "clarity_score": 50,
+    "fit_score": 50,
+    "generated_at": "2025-11-26T14:00:37.683471"
+  },
+  {
+    "lead_summary": {
+      "created_at": "2025-11-26T14:32:48.118591",
+      "image_storage_need": "yes",
+      "name": "John",
+      "email": "zone@directexample.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T14:46:49.888143"
+    },
+    "generated_at": "2025-11-26T14:46:49.889144"
+  },
+  {
+    "lead": {
+      "created_at": "2025-11-26T14:32:48.118591",
+      "image_storage_need": "yes",
+      "name": "John",
+      "email": "zone@directexample.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T14:46:49.888143"
+    },
+    "pain_points": [],
+    "budget_mentioned": false,
+    "decision_maker": false,
+    "clarity_score": 50,
+    "fit_score": 50,
+    "generated_at": "2025-11-26T14:46:51.303571"
+  },
+  {
+    "lead_summary": {
+      "created_at": "2025-11-26T15:00:43.711226",
+      "name": "John",
+      "email": "john@directexample.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T15:01:50.502059"
+    },
+    "generated_at": "2025-11-26T15:01:50.502059"
+  },
+  {
+    "lead": {
+      "created_at": "2025-11-26T15:00:43.711226",
+      "name": "John",
+      "email": "john@directexample.com",
+      "complete": true,
+      "finalized_at": "2025-11-26T15:01:50.502059"
+    },
+    "pain_points": [],
+    "budget_mentioned": false,
+    "decision_maker": false,
+    "clarity_score": 50,
+    "fit_score": 50,
+    "generated_at": "2025-11-26T15:01:51.948146"
+  }
+]
