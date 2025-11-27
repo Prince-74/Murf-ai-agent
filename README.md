@@ -1,183 +1,445 @@
-🚨 Day 6 – Fraud Alert Voice Agent (LiveKit + SQLite + Murf Falcon)
+🛡️ Day 6 – Fraud Alert Voice Agent (LiveKit + Murf Falcon + SQLite)
+Welcome to Day 6 of the Murf AI Voice Agents Challenge!
 
-This project implements a fully functional Fraud Alert Voice Agent for a fictional bank SecureBank, built as part of the Murf AI Voice Agent Challenge – Day 6.
-
-The agent automatically:
-
+In this project, I built a Fraud Alert Voice Agent for a fictional bank using LiveKit Agents, Murf Falcon TTS, Deepgram STT, Gemini Flash, and SQLite as the fraud-case database.
+This agent behaves exactly like a real bank’s fraud-prevention representative — but using safe, fake data only.
+🚨 Project Overview
+The Fraud Alert Agent automatically:
 Loads a fraud case from an SQLite database
+Verifies the caller using a non-sensitive security question
+Reads out suspicious transaction details
+Asks the user to confirm or deny the transaction
+Updates the fraud case as safe or fraudulent
+Logs the result back into the database
 
-Greets the customer professionally
+This entire interaction runs inside LiveKit's real-time voice session, powered by Murf Falcon’s ultra-fast TTS engine.
+🎯 Features (MVP)
+🔍 1. Fake Fraud Case Database (SQLite)
+Each case contains:
+Plain text
+ANTLR4
+Bash
+C
+C#
+CSS
+CoffeeScript
+CMake
+Dart
+Django
+Docker
+EJS
+Erlang
+Git
+Go
+GraphQL
+Groovy
+HTML
+Java
+JavaScript
+JSON
+JSX
+Kotlin
+LaTeX
+Less
+Lua
+Makefile
+Markdown
+MATLAB
+Markup
+Objective-C
+Perl
+PHP
+PowerShell
+.properties
+Protocol Buffers
+Python
+R
+Ruby
+Sass (Sass)
+Sass (Scss)
+Scheme
+SQL
+Shell
+Swift
+SVG
+TSX
+TypeScript
+WebAssembly
+YAML
+XML
 
-Performs safe verification (no sensitive data)
-
-Reads suspicious transaction details
-
-Asks whether the transaction was actually made
-
-Updates the database as confirmed_safe or confirmed_fraud
-
-Ends the call with a calm, reassuring message
-
-Everything runs inside a LiveKit voice session using:
-
-Deepgram → Speech-to-Text
-
-Google Gemini Flash → LLM
-
-Murf Falcon → TTS
-
-SQLite → Fraud Case Storage
-
-This project demonstrates a complete, realistic fraud-alert call flow — safe, fast, and entirely powered by voice AI.
-
-🧠 Features
-✅ Primary Goal (MVP)
-
-Loads a fraud case using load_case(user_name)
-
-Asks verification question stored in DB
-
-Verifies customer via verify_answer()
-
-Reads out suspicious details (merchant, card ending, timestamp, amount, etc.)
-
-Asks: “Did you make this transaction?”
-
-Updates case status using update_case_status()
-
-Writes back status + notes into SQLite
-
-Uses no sensitive data (PIN, full card number, password, etc.)
-
-🗄 Database
-
-SQLite table:
-
-CREATE TABLE fraud_cases (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_name TEXT NOT NULL,
-    security_identifier TEXT,
-    card_ending TEXT,
-    amount TEXT,
-    merchant TEXT,
-    timestamp TEXT,
-    category TEXT,
-    source TEXT,
-    verification_question TEXT,
-    verification_answer TEXT,
-    status TEXT,
-    notes TEXT,
-    updated_at TEXT
-);
+{
+  "user_name": "John",
+  "security_identifier": "12345",
+  "card_ending": "4242",
+  "amount": "₹3,999",
+  "merchant": "ABC Industries",
+  "timestamp": "2025-02-10 14:21",
+  "category": "e-commerce",
+  "source": "alibaba.com",
+  "verification_question": "What is your favorite color?",
+  "verification_answer": "blue",
+  "status": "pending_review"
+}
 
 
-Includes 5 fully fake sample fraud cases.
 
-📁 Project Structure
-backend/
-│── src/
-│   ├── agent.py          # Fraud Agent (LiveKit voice agent)
-│   ├── fraud_tools.py    # SQLite tools (load case, verify, update)
-│── shared-data/
-│   ├── fraud_cases.db    # SQLite database
-│── init_db.py             # Script to initialize sample fraud cases
-│── README.md
+(5 fake sample cases are inserted.)
+🗣️ 2. Realistic Fraud Department Persona
+The agent:
+Introduces itself as SecureBank Fraud Department
+Speaks calmly, professionally, and concisely
+Never asks for PINs, full card numbers, or any sensitive data
+Uses only the information in your database tools
 
-🚀 How It Works (Call Flow)
+🔐 3. Safe Verification Flow
+Ask for the caller’s name
+Load fraud case via load_case(name)
+Ask the stored verification question
+Confirm via verify_answer(name, answer)
 
-Agent:
-“Hello, this is SecureBank’s fraud prevention department. May I confirm your name?”
-
-User gives name → tool load_case(name) loads case.
-
-Agent:
-“For verification: What is your favorite color?”
-
-User answers → verify_answer(name, answer) returns verified=True/False.
-
+If verification fails → end call politely.
+🧾 4. Transaction Review Flow
 If verified:
+Read merchant, amount, time, masked card, category
+Ask “Did you make this transaction?”
 
-Agent reads suspicious transaction details from DB.
+If Yes → mark case confirmed_safe
 
-Asks: “Did you make this transaction?”
+If No → mark case confirmed_fraud
+All updates are saved using update_case_status(...).
+🛠️ Tech Stack
+ComponentTechnologyVoice → TextDeepgram Nova-3Text → VoiceMurf Falcon (Matthew)LLMGoogle Gemini 2.5 FlashDatabaseSQLiteRuntimeLiveKit Voice AgentsToolsCustom function_tools
+📂 Project Structure
+Plain text
+ANTLR4
+Bash
+C
+C#
+CSS
+CoffeeScript
+CMake
+Dart
+Django
+Docker
+EJS
+Erlang
+Git
+Go
+GraphQL
+Groovy
+HTML
+Java
+JavaScript
+JSON
+JSX
+Kotlin
+LaTeX
+Less
+Lua
+Makefile
+Markdown
+MATLAB
+Markup
+Objective-C
+Perl
+PHP
+PowerShell
+.properties
+Protocol Buffers
+Python
+R
+Ruby
+Sass (Sass)
+Sass (Scss)
+Scheme
+SQL
+Shell
+Swift
+SVG
+TSX
+TypeScript
+WebAssembly
+YAML
+XML
 
-User replies:
+backend/
+│
+├── src/
+│   ├── agent.py              # Main Fraud Agent logic
+│   ├── fraud_tools.py        # SQLite functions via function_tool
+│   ├── init_db.py            # Creates fraud_cases.db with sample data
+│
+├── shared-data/
+│   └── fraud_cases.db        # SQLite database
+│
+└── README.md
 
-YES → mark case as confirmed_safe
 
-NO → mark case as confirmed_fraud
 
-Agent ends politely:
-“Thank you. Your case has been updated. Have a safe day.”
+▶️ How to Run
+1. Create SQLite DB
+Plain text
+ANTLR4
+Bash
+C
+C#
+CSS
+CoffeeScript
+CMake
+Dart
+Django
+Docker
+EJS
+Erlang
+Git
+Go
+GraphQL
+Groovy
+HTML
+Java
+JavaScript
+JSON
+JSX
+Kotlin
+LaTeX
+Less
+Lua
+Makefile
+Markdown
+MATLAB
+Markup
+Objective-C
+Perl
+PHP
+PowerShell
+.properties
+Protocol Buffers
+Python
+R
+Ruby
+Sass (Sass)
+Sass (Scss)
+Scheme
+SQL
+Shell
+Swift
+SVG
+TSX
+TypeScript
+WebAssembly
+YAML
+XML
 
-🛠 How to Run
-1️⃣ Install dependencies
-pip install -r requirements.txt
-
-2️⃣ Initialize SQLite DB
 python src/init_db.py
 
 
-You should see:
 
-SQLite database initialized with 5 sample cases!
+2. Start LiveKit Worker
+Plain text
+ANTLR4
+Bash
+C
+C#
+CSS
+CoffeeScript
+CMake
+Dart
+Django
+Docker
+EJS
+Erlang
+Git
+Go
+GraphQL
+Groovy
+HTML
+Java
+JavaScript
+JSON
+JSX
+Kotlin
+LaTeX
+Less
+Lua
+Makefile
+Markdown
+MATLAB
+Markup
+Objective-C
+Perl
+PHP
+PowerShell
+.properties
+Protocol Buffers
+Python
+R
+Ruby
+Sass (Sass)
+Sass (Scss)
+Scheme
+SQL
+Shell
+Swift
+SVG
+TSX
+TypeScript
+WebAssembly
+YAML
+XML
 
-3️⃣ Start the LiveKit Worker
 python src/agent.py
 
 
-Open the Voice Agent UI in browser → connect → begin the fraud alert flow.
 
-🗣 Voice Tech Used
-Component	Provider	Purpose
-STT	Deepgram Nova-3	Convert user speech → text
-LLM	Google Gemini 2.5 Flash	Smart call flow + reasoning
-TTS	Murf Falcon Voices	Natural, crisp, real-time voice
-DB	SQLite	Fraud case storage
-🔒 Safety Notes
+3. Open the Voice Assistant Playground
+Connect and test!
 
-All data is fake
+Ask:
+Plain text
+ANTLR4
+Bash
+C
+C#
+CSS
+CoffeeScript
+CMake
+Dart
+Django
+Docker
+EJS
+Erlang
+Git
+Go
+GraphQL
+Groovy
+HTML
+Java
+JavaScript
+JSON
+JSX
+Kotlin
+LaTeX
+Less
+Lua
+Makefile
+Markdown
+MATLAB
+Markup
+Objective-C
+Perl
+PHP
+PowerShell
+.properties
+Protocol Buffers
+Python
+R
+Ruby
+Sass (Sass)
+Sass (Scss)
+Scheme
+SQL
+Shell
+Swift
+SVG
+TSX
+TypeScript
+WebAssembly
+YAML
+XML
 
-No real card info
+Hello
+My name is John
+Blue
+No, I didn't make this transaction
 
-No PIN/password handling
 
-Verification uses harmless questions only
 
-Designed strictly for demo/learning purposes
+You will see:
+Case loaded
+Verification success
+Fraud confirmed
+Database updated
 
-🔗 Command to Push Code to GitHub
+📤 Git Commands to Push This Project
+Plain text
+ANTLR4
+Bash
+C
+C#
+CSS
+CoffeeScript
+CMake
+Dart
+Django
+Docker
+EJS
+Erlang
+Git
+Go
+GraphQL
+Groovy
+HTML
+Java
+JavaScript
+JSON
+JSX
+Kotlin
+LaTeX
+Less
+Lua
+Makefile
+Markdown
+MATLAB
+Markup
+Objective-C
+Perl
+PHP
+PowerShell
+.properties
+Protocol Buffers
+Python
+R
+Ruby
+Sass (Sass)
+Sass (Scss)
+Scheme
+SQL
+Shell
+Swift
+SVG
+TSX
+TypeScript
+WebAssembly
+YAML
+XML
+
+git init
 git add .
-git commit -m "Day 6 – Fraud Alert Voice Agent complete (SQLite + Murf + LiveKit)"
+git commit -m "Day 6 – Fraud Alert Voice Agent completed"
 git branch -M main
-git remote add origin https://github.com/YOURUSERNAME/YOUR-REPO.git
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 git push -u origin main
 
 
-Replace with your repo URL.
 
-🎉 LinkedIn Post (Copy-Paste Ready)
+🌟 LinkedIn Post (Ready to Use)
+🚨 Day 6 of the #10DaysofAIVoiceAgents Challenge!
 
-🚨 Day 6 of the Murf AI Voice Agent Challenge – Fraud Alert Voice Agent!
+Today I built a Fraud Alert Voice Agent using LiveKit Agents, Murf Falcon TTS, Deepgram STT, Gemini Flash, and SQLite.
+This voice agent acts like a real bank fraud rep — but using completely safe, fake data.
+💡 What it does:
+Loads fraud cases from SQLite
+Verifies the user with a safe question (no PINs, no sensitive data!)
+Reads suspicious transactions
+Asks “Did you make this transaction?”
+Marks it Safe or Fraudulent
+Updates the database in real time
 
-Today I built a fully functional Fraud Alert Voice Agent for a fictional bank using:
+🎤 The entire flow happens inside a seamless LiveKit voice session with ultra-fast Murf Falcon TTS.
+This was one of the most realistic real-world voice-AI workflows I’ve built — and it’s amazing to see everything working end-to-end.
+Excited for Day 7! 🚀
+#MurfAIVoiceAgentsChallenge #10DaysOfAIVoiceAgents #VoiceAI #LiveKit #MurfAI #SQLite #FraudDetection
 
-🔹 LiveKit for real-time voice interaction
-🔹 Deepgram Nova STT for accurate speech recognition
-🔹 Google Gemini Flash for reasoning + conversational flow
-🔹 Murf Falcon TTS for natural, crisp responses
-🔹 SQLite as a fraud-case database
 
-🧠 The agent can:
-✔ Verify the user (safe, non-sensitive check)
-✔ Read a suspicious transaction from the database
-✔ Ask if the user actually made the purchase
-✔ Classify the case as confirmed_safe or confirmed_fraud
-✔ Write the results back into SQLite
-✔ Speak professionally and calmly like a real bank fraud analyst
 
-This was one of the most realistic agent flows so far — felt like building an actual fraud-prevention hotline!
-
-Excited for the upcoming days 🔥
-
-#MurfAIVoiceAgentsChallenge #10DaysofAIVoiceAgents #MurfAI #LiveKit #VoiceAI #FraudDetection #Python #SQLite #AIEngineering
