@@ -1,44 +1,58 @@
+# backend/src/agent.py
 import logging
 from dotenv import load_dotenv
-
 from livekit.agents import (
-    Agent, AgentSession, JobContext,
-    RoomInputOptions, WorkerOptions, cli, tokenize
+    Agent,
+    AgentSession,
+    JobContext,
+    RoomInputOptions,
+    WorkerOptions,
+    cli,
+    tokenize,
 )
-
 from livekit.plugins import murf, google, deepgram, noise_cancellation
 
-from fraud_tools import load_case, verify_answer, update_case_status
+# tools (async): functions in food_tools.py
+from food_tools import (
+    list_catalog,
+    find_item,
+    add_to_cart,
+    remove_from_cart,
+    update_quantity,
+    get_cart,
+    save_order,
+    list_recipes,
+    add_recipe_items_to_cart,
+)
 
-logger = logging.getLogger("fraud-agent")
+logger = logging.getLogger("day7-agent")
 load_dotenv(".env.local")
 
 
-class FraudAgent(Agent):
-    def __init__(self):
+class FoodAssistant(Agent):
+    def __init__(self) -> None:
         super().__init__(
             instructions="""
-You are a fraud-alert representative and your name is Alex from **SecureBank**.
-Be calm, professional, and concise.
-
-FLOW:
-1. Ask for customer's name.
-2. Call load_case(name). If not_found → politely end.
-3. Ask stored verification question.
-4. Call verify_answer(name, answer).
-   - If False → say cannot proceed → end call.
-   - If True → continue.
-5. Read suspicious transaction details.
-6. Ask: “Did you make this transaction? Yes or No?”
-7. If YES → update_case_status(..., "confirmed_safe")
-8. If NO  → update_case_status(..., "confirmed_fraud")
-9. End call.
-
-RULES:
-- Never ask for PIN, password, or full card number.
-- Use only tool data.
+You are a friendly food & grocery ordering assistant for 'QuickBite'.
+Behave conversationally but concisely.
+Key behaviors:
+- Offer help, list catalog, add/remove items, update quantities.
+- Ask clarifying questions when quantity or item is missing.
+- For "ingredients for X", map to recipes and add multiple items.
+- When user says "place my order" or "that's all", confirm the final cart and call save_order(customer_name).
+Keep replies short and clear.
 """,
-            tools=[load_case, verify_answer, update_case_status],
+            tools=[
+                list_catalog,
+                find_item,
+                add_to_cart,
+                remove_from_cart,
+                update_quantity,
+                get_cart,
+                save_order,
+                list_recipes,
+                add_recipe_items_to_cart,
+            ],
         )
 
 
@@ -59,11 +73,9 @@ async def entrypoint(ctx: JobContext):
     )
 
     await session.start(
-        agent=FraudAgent(),
+        agent=FoodAssistant(),
         room=ctx.room,
-        room_input_options=RoomInputOptions(
-            noise_cancellation=noise_cancellation.BVC()
-        ),
+        room_input_options=RoomInputOptions(noise_cancellation=noise_cancellation.BVC()),
     )
 
     await ctx.connect()

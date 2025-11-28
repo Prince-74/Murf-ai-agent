@@ -1,0 +1,14 @@
+{
+  "items": [
+    {"name": "bread", "category": "grocery", "price": 30},
+    {"name": "milk", "category": "grocery", "price": 25},
+    {"name": "eggs", "category": "grocery", "price": 60},
+    {"name": "cola bottle", "category": "snacks", "price": 40},
+    {"name": "chips", "category": "snacks", "price": 20},
+    {"name": "pasta", "category": "grocery", "price": 50},
+    {"name": "pasta sauce", "category": "grocery", "price": 80},  
+    {"name": "peanut butter", "category": "grocery", "price": 120},
+    {"name": "cheese slice", "category": "grocery", "price": 45},
+    {"name": "sandwich", "category": "prepared", "price": 90}
+  ]
+}
