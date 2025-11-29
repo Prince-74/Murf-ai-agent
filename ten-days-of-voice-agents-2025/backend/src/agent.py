@@ -1,6 +1,7 @@
-# backend/src/agent.py
+# agent.py
 import logging
 from dotenv import load_dotenv
+
 from livekit.agents import (
     Agent,
     AgentSession,
@@ -10,72 +11,64 @@ from livekit.agents import (
     cli,
     tokenize,
 )
+
 from livekit.plugins import murf, google, deepgram, noise_cancellation
 
-# tools (async): functions in food_tools.py
-from food_tools import (
-    list_catalog,
-    find_item,
-    add_to_cart,
-    remove_from_cart,
-    update_quantity,
-    get_cart,
-    save_order,
-    list_recipes,
-    add_recipe_items_to_cart,
+from game_tools import (
+    start_new_game,
+    get_game_state,
+    update_location,
+    add_to_inventory,
+    log_story_event,
 )
 
-logger = logging.getLogger("day7-agent")
+logger = logging.getLogger("game-master")
 load_dotenv(".env.local")
 
 
-class FoodAssistant(Agent):
-    def __init__(self) -> None:
+class GameMaster(Agent):
+    def __init__(self):
         super().__init__(
             instructions="""
-You are a friendly food & grocery ordering assistant for 'QuickBite'.
-Behave conversationally but concisely.
-Key behaviors:
-- Offer help, list catalog, add/remove items, update quantities.
-- Ask clarifying questions when quantity or item is missing.
-- For "ingredients for X", map to recipes and add multiple items.
-- When user says "place my order" or "that's all", confirm the final cart and call save_order(customer_name).
-Keep replies short and clear.
+You are a Sci-Fi Game Master running an adventure on Mars.
+Tone: cinematic, dramatic, immersive.
+
+Rules:
+- Describe scenes vividly.
+- End every response with: “What do you do next?”
+- Use tools ONLY when needed (new game, state, inventory, logs).
+- Never break character.
 """,
             tools=[
-                list_catalog,
-                find_item,
-                add_to_cart,
-                remove_from_cart,
-                update_quantity,
-                get_cart,
-                save_order,
-                list_recipes,
-                add_recipe_items_to_cart,
+                start_new_game,
+                get_game_state,
+                update_location,
+                add_to_inventory,
+                log_story_event,
             ],
         )
 
 
 async def entrypoint(ctx: JobContext):
-    ctx.log_context_fields = {"room": ctx.room.name}
-
     session = AgentSession(
         stt=deepgram.STT(model="nova-3"),
         llm=google.LLM(model="gemini-2.5-flash"),
         tts=murf.TTS(
             voice="en-US-matthew",
-            style="Conversation",
-            tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
+            style="Narration",
+            tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2)
         ),
         vad=None,
         turn_detection=None,
-        preemptive_generation=True,
+        preemptive_generation=True
     )
 
     await session.start(
-        agent=FoodAssistant(),
+        agent=GameMaster(),
         room=ctx.room,
-        room_input_options=RoomInputOptions(noise_cancellation=noise_cancellation.BVC()),
+        room_input_options=RoomInputOptions(
+            noise_cancellation=noise_cancellation.BVC()
+        )
     )
 
     await ctx.connect()

@@ -1,3 +1,0 @@
-.\livekit-server.exe --dev   
-uv run python src/agent.py dev
-npm run dev 
