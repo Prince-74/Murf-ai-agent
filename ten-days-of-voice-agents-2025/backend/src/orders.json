@@ -1,0 +1,59 @@
+{
+  "orders": [
+    {
+      "id": 1,
+      "buyer": {
+        "name": "jonh",
+        "address": "delhi"
+      },
+      "items": [
+        {
+          "product_id": "mug-001",
+          "name": "Stoneware Coffee Mug",
+          "quantity": 1,
+          "unit_price": 800
+        }
+      ],
+      "total": 800,
+      "currency": "INR",
+      "timestamp": "2025-11-30T13:27:39.117026"
+    },
+    {
+      "id": 2,
+      "buyer": {
+        "address": "street two",
+        "name": "doe",
+        "phone_number": "123489"
+      },
+      "items": [
+        {
+          "product_id": "mug-002",
+          "name": "Galaxy Pattern Mug",
+          "quantity": 1,
+          "unit_price": 950
+        }
+      ],
+      "total": 950,
+      "currency": "INR",
+      "timestamp": "2025-11-30T13:41:43.722059"
+    },
+    {
+      "id": 3,
+      "buyer": {
+        "name": "Alex Gio",
+        "address": "wasstreet two"
+      },
+      "items": [
+        {
+          "product_id": "hoodie-002",
+          "name": "Black Hoodie",
+          "quantity": 1,
+          "unit_price": 1399
+        }
+      ],
+      "total": 1399,
+      "currency": "INR",
+      "timestamp": "2025-11-30T14:21:33.339780"
+    }
+  ]
+}

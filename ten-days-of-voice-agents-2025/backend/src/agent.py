@@ -1,4 +1,3 @@
-# agent.py
 import logging
 from dotenv import load_dotenv
 
@@ -12,40 +11,29 @@ from livekit.agents import (
     tokenize,
 )
 
-from livekit.plugins import murf, google, deepgram, noise_cancellation
+from livekit.plugins import murf, google, deepgram
 
-from game_tools import (
-    start_new_game,
-    get_game_state,
-    update_location,
-    add_to_inventory,
-    log_story_event,
-)
+from commerce_tools import list_products, create_order, last_order
 
-logger = logging.getLogger("game-master")
+logger = logging.getLogger("ecommerce-agent")
 load_dotenv(".env.local")
 
 
-class GameMaster(Agent):
+class EcommerceAgent(Agent):
     def __init__(self):
         super().__init__(
             instructions="""
-You are a Sci-Fi Game Master running an adventure on Mars.
-Tone: cinematic, dramatic, immersive.
+You are a voice shopping assistant following an ACP-inspired flow.
 
-Rules:
-- Describe scenes vividly.
-- End every response with: “What do you do next?”
-- Use tools ONLY when needed (new game, state, inventory, logs).
-- Never break character.
+You MUST:
+- Use list_products for showing catalog items.
+- Use create_order to place orders.
+- Use last_order to read back previous purchases.
+
+Never guess product details.
+Always confirm before placing an order.
 """,
-            tools=[
-                start_new_game,
-                get_game_state,
-                update_location,
-                add_to_inventory,
-                log_story_event,
-            ],
+            tools=[list_products, create_order, last_order],
         )
 
 
@@ -55,20 +43,15 @@ async def entrypoint(ctx: JobContext):
         llm=google.LLM(model="gemini-2.5-flash"),
         tts=murf.TTS(
             voice="en-US-matthew",
-            style="Narration",
-            tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2)
+            style="Conversation",
+            tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
         ),
-        vad=None,
-        turn_detection=None,
-        preemptive_generation=True
     )
 
     await session.start(
-        agent=GameMaster(),
+        agent=EcommerceAgent(),
         room=ctx.room,
-        room_input_options=RoomInputOptions(
-            noise_cancellation=noise_cancellation.BVC()
-        )
+        room_input_options=RoomInputOptions(),
     )
 
     await ctx.connect()
